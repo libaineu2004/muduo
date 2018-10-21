@@ -99,7 +99,7 @@ class LogClient : boost::noncopyable
     LOG_WARN << logRecord->DebugString();
   }
 
-  void updateLogRecord(const StringPiece& message)
+  void updateLogRecord(const StringPiece& message) REQUIRES(mutex_)
   {
     mutex_.assertLocked();
     logRecord_.set_level(1);
@@ -111,8 +111,8 @@ class LogClient : boost::noncopyable
   TcpClient client_;
   Codec codec_;
   MutexLock mutex_;
-  LogRecord logRecord_;
-  TcpConnectionPtr connection_;
+  LogRecord logRecord_ GUARDED_BY(mutex_);
+  TcpConnectionPtr connection_ GUARDED_BY(mutex_);
 };
 
 }
